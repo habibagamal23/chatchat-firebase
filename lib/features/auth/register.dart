@@ -2,6 +2,7 @@ import 'package:chatchat/features/auth/login.dart';
 import 'package:chatchat/features/home/hom_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'firbae_auth/fieauth.dart';
 import 'textfeild_widget.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -14,6 +15,7 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController passController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
 
   final formKey = GlobalKey<FormState>();
 
@@ -21,6 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void dispose() {
     passController.dispose();
     emailController.dispose();
+    nameController.dispose();
 
     super.dispose();
   }
@@ -28,12 +31,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _submitRegistration() async {
     if (formKey.currentState!.validate()) {
       try {
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        UserCredential userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailController.text,
           password: passController.text,
         );
 
-        print("User registered successfully");
+        await userCredential.user!.updateDisplayName(nameController.text);
+
+        await FireAuth.createUser();
+
+        print("User registered and display name updated successfully");
 
         Navigator.pushReplacement(
           context,
@@ -46,8 +54,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         );
       }
-      print('Name: ${passController.text}');
-      print('Email: ${emailController.text}');
     }
   }
 
@@ -73,6 +79,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 key: formKey,
                 child: Column(
                   children: [
+                    CustomField(
+                      controller: nameController,
+                      label: "Name",
+                      icon: const Icon(Icons.supervised_user_circle),
+                    ),
                     CustomField(
                       controller: emailController,
                       label: "Email",
