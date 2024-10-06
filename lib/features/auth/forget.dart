@@ -19,8 +19,6 @@ class _ForgetScreenState extends State<ForgetScreen> {
     super.dispose();
   }
 
-  void _submitResetPassword() {}
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +44,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
                 child: CustomField(
                   controller: emailController,
                   label: "Email",
-                  icon: const Icon(Icons.email), // Assuming Iconsax is defined
+                  icon: const Icon(Icons.email),
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter your email';

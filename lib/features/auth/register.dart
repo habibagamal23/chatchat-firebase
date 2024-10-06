@@ -1,8 +1,9 @@
 import 'package:chatchat/features/auth/login.dart';
 import 'package:chatchat/features/home/hom_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'firbae_auth/fieauth.dart';
+import '../home/notes_home.dart';
 import 'textfeild_widget.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -28,6 +29,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  Future<void> createUser() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      print("No user is currently signed in.");
+      return;
+    }
+    String? displayName = user.displayName;
+    String? email = user.email;
+    String uid = user.uid;
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'name':
+            displayName ?? 'No Name', // Fallback in case displayName is null
+        'email': email ?? 'No Email', // Fallback in case email is null
+        'id': uid, // User's UID
+      });
+
+      print("User data saved successfully!");
+    } catch (e) {
+      print("Failed to save user data: $e");
+    }
+  }
+
   void _submitRegistration() async {
     if (formKey.currentState!.validate()) {
       try {
@@ -39,13 +63,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         await userCredential.user!.updateDisplayName(nameController.text);
 
-        await FireAuth.createUser();
+        await createUser();
 
         print("User registered and display name updated successfully");
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          MaterialPageRoute(builder: (context) => NotesHome()),
         );
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(

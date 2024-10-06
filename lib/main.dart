@@ -3,6 +3,7 @@ import 'package:chatchat/features/home/hom_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'features/home/notes_home.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -19,12 +20,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: FirebaseAuth.instance.currentUser==null? LoginScreen(): HomeScreen()
-    );
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: FirebaseAuth.instance.currentUser == null
+            ? LoginScreen()
+            : NotesHome());
   }
 }

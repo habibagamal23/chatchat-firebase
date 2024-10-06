@@ -12,55 +12,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final TextEditingController messageController = TextEditingController();
-  List messages = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchMessages(); // Fetch messages when the screen is loaded
-  }
+  final TextEditingController categController = TextEditingController();
 
   @override
   void dispose() {
-    messageController.dispose(); // Dispose the controller when the widget is destroyed
+    categController.dispose();
     super.dispose();
   }
 
-  // Function to fetch messages from Firestore
-  Future<void> _fetchMessages() async {
+  Future<void> _addcateg(String name) async {
     try {
-      QuerySnapshot querySnapshot =
-      await FirebaseFirestore.instance.collection('messages').get();
-
-      // Clear the current list before adding new messages
-      messages.clear();
-
-      // Add fetched documents to the list
-      messages.addAll(querySnapshot.docs);
-
-      // Notify the framework that the state has changed
-      setState(() {});
-    } catch (e) {
-      print("Failed to fetch messages: $e");
-    }
-  }
-
-  Future<void> _addMessage(String messageText) async {
-    try {
-      await FirebaseFirestore.instance.collection('messages').add({
-        'text': messageText,
-        'timestamp': FieldValue.serverTimestamp(),
+      await FirebaseFirestore.instance.collection('categoreis').add({
+        'name': name,
       });
-
-      _fetchMessages();
       Navigator.pop(context);
     } catch (e) {
-      print("Failed to add message: $e");
+      print("Failed to add category: $e");
     }
   }
 
-  // Show the bottom sheet to add a new message
   void _showAddMessageSheet() {
     showModalBottomSheet(
       context: context,
@@ -71,22 +41,22 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: messageController,
+                controller: categController,
                 decoration: const InputDecoration(
-                  labelText: 'Enter Message',
+                  labelText: 'Enter category',
                   border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
-                  String messageText = messageController.text;
-                  if (messageText.isNotEmpty) {
-                    _addMessage(messageText); // Add message to Firestore
-                    messageController.clear(); // Clear the input field
+                  String categText = categController.text;
+                  if (categText.isNotEmpty) {
+                    _addcateg(categText);
+                    categController.clear();
                   }
                 },
-                child: const Text('Add Message'),
+                child: const Text('Add catogry'),
               ),
             ],
           ),
@@ -113,22 +83,33 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: messages.isEmpty
-          ? const Center(
-        child: Text(
-          'No Messages Added',
-          style: TextStyle(fontSize: 24),
-        ),
-      )
-          : ListView.builder(
-        itemCount: messages.length,
-        itemBuilder: (context, index) {
-          var message = messages[index];
-          return ListTile(
-            title: Text(message['text'] ?? 'No content'),
-            subtitle: Text(message['timestamp'] != null
-                ? message['timestamp'].toDate().toString()
-                : 'No timestamp'),
+      // Use StreamBuilder to listen for real-time updates from Firestore
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('categoreis').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(child: Text('Error loading catogry'));
+          }
+          // Check if the data is available and the snapshot contains data
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(
+              child: Text(
+                'No category Added',
+                style: TextStyle(fontSize: 24),
+              ),
+            );
+          }
+
+          var categorys = snapshot.data!.docs;
+
+          return ListView.builder(
+            itemCount: categorys.length,
+            itemBuilder: (context, index) {
+              var category = categorys[index];
+              return ListTile(
+                title: Text(category['name'] ?? 'No content'),
+              );
+            },
           );
         },
       ),

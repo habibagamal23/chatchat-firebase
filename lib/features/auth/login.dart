@@ -3,6 +3,7 @@ import 'package:chatchat/features/auth/register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../home/hom_screen.dart';
+import '../home/notes_home.dart';
 import 'textfeild_widget.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -93,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => HomeScreen()),
+                                  builder: (context) => NotesHome()),
                             );
                           } catch (error) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -103,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             );
                           }
                         }
-                      }, // Submit form
+                      },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
