@@ -1,3 +1,5 @@
+import 'package:chatchat/features/auth/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -11,7 +13,14 @@ class HomeScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () {},
+            onPressed: () async{
+             await  FirebaseAuth.instance.signOut();
+             Navigator.pushReplacement(
+               context,
+               MaterialPageRoute(
+                   builder: (context) => LoginScreen()),
+             );
+            },
           ),
         ],
       ),

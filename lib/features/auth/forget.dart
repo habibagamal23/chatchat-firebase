@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'textfeild_widget.dart';
+
 class ForgetScreen extends StatefulWidget {
   const ForgetScreen({super.key});
 
@@ -17,11 +19,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
     super.dispose();
   }
 
-  void _submitResetPassword() {
-    if (formKey.currentState!.validate()) {
-      print('Email: ${emailController.text}');
-    }
-  }
+  void _submitResetPassword() {}
 
   @override
   Widget build(BuildContext context) {
@@ -59,13 +57,33 @@ class _ForgetScreenState extends State<ForgetScreen> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: _submitResetPassword,
+                onPressed: () async {
+                  try {
+                    await FirebaseAuth.instance.sendPasswordResetEmail(
+                      email: emailController.text,
+                    );
+
+                    Navigator.pop(context);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                            "Password reset email sent. Please check your inbox."),
+                      ),
+                    );
+                  } catch (error) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(error.toString()),
+                      ),
+                    );
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  backgroundColor:
-                      Colors.blue,
+                  backgroundColor: Colors.blue,
                   padding: const EdgeInsets.all(16),
                 ),
                 child: Center(

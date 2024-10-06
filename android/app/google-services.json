@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "17058409976",
+    "project_id": "chatchat-cf58b",
+    "storage_bucket": "chatchat-cf58b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:17058409976:android:259350e8b2319f14487a0d",
+        "android_client_info": {
+          "package_name": "com.example.chatchat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkLzJArmSC493QfRsUyq59V_TND6rppWY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

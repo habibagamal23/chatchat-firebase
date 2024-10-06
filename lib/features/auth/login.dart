@@ -1,4 +1,8 @@
+import 'package:chatchat/features/auth/forget.dart';
+import 'package:chatchat/features/auth/register.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../home/hom_screen.dart';
 import 'textfeild_widget.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -20,8 +24,6 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,10 +40,6 @@ class _LoginScreenState extends State<LoginScreen> {
               Text(
                 "Welcome Back,",
                 style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              Text(
-                "Chat App ",
-                style: Theme.of(context).textTheme.bodyLarge,
               ),
               const SizedBox(height: 16),
               Form(
@@ -67,7 +65,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         const Spacer(),
                         GestureDetector(
                           child: const Text("Forgot Password?"),
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ForgetScreen()),
+                            );
+                          },
                         )
                       ],
                     ),
@@ -75,16 +79,34 @@ class _LoginScreenState extends State<LoginScreen> {
                       height: 16,
                     ),
                     ElevatedButton(
-                      onPressed: (){
+                      onPressed: () async {
                         if (formKey.currentState!.validate()) {
-                          print('Email: ${emailController.text}');
-                          print('Password: ${passwordController.text}');
+                          try {
+                            await FirebaseAuth.instance
+                                .signInWithEmailAndPassword(
+                              email: emailController.text,
+                              password: passwordController.text,
+                            );
+
+                            print("Login successful");
+
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HomeScreen()),
+                            );
+                          } catch (error) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(error.toString()),
+                              ),
+                            );
+                          }
                         }
                       }, // Submit form
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
-
                         backgroundColor: Colors.blue,
                         padding: const EdgeInsets.all(16),
                       ),
@@ -98,22 +120,22 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(
                       height: 16,
                     ),
-                    OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-
-                          padding: const EdgeInsets.all(16),
-                        ),
-                        onPressed: () {},
-                        child: Center(
+                    Center(
+                      child: TextButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => RegisterScreen()),
+                            );
+                          },
                           child: Text(
                             "Create Account".toUpperCase(),
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.onBackground,
                             ),
-                          ),
-                        )),
+                          )),
+                    ),
                   ],
                 ),
               ),
