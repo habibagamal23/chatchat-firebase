@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       onGenerateRoute: AppRouter.generateRoute,
-      initialRoute: Routes.splashScreen,
+      initialRoute: Routes.loginScreen,
     );
   }
 }

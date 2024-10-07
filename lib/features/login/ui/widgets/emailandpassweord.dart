@@ -1,70 +1,64 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/widgets/custom_feild.dart';
+import '../../logic/login_cubit.dart';
 
-class EmailAndPassword extends StatefulWidget {
+class EmailAndPassword extends StatelessWidget {
   const EmailAndPassword({super.key});
-
-  @override
-  State<EmailAndPassword> createState() => _EmailAndPasswordState();
-}
-
-class _EmailAndPasswordState extends State<EmailAndPassword> {
-
-  late TextEditingController passwordController;
-
-
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: context.read<LoginCubit>().formKey,
+      key: context.read<LoginCubit>().formKey, // Use formKey from the Cubit
       child: Column(
         children: [
+          // Email field
           AppTextFormField(
             hintText: 'Email',
             validator: (value) {
-              if (value == null ||
-                  value.isEmpty ) {
+              if (value == null || value.isEmpty || !value.contains('@')) {
                 return 'Please enter a valid email';
               }
+              return null;
             },
-            // controller: context.read<LoginCubit>().emailController,
+            controller: context.read<LoginCubit>().emailController,
           ),
-          AppTextFormField(
-            // controller: context.read<LoginCubit>().passwordController,
-            hintText: 'Password',
-            isObscureText: isObscureText,
-            suffixIcon: GestureDetector(
-              onTap: () {
-                setState(() {
-                  isObscureText = !isObscureText;
-                });
-              },
-              child: Icon(
-                isObscureText ? Icons.visibility_off : Icons.visibility,
-              ),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a valid password';
+
+          // Password field using BlocBuilder for visibility state
+          BlocBuilder<LoginCubit, LoginState>(
+            builder: (context, state) {
+              bool isPasswordVisible = false;
+
+              // Check if the current state is for toggling password visibility
+              if (state is LoginPasswordVisibilityToggled) {
+                isPasswordVisible = state.isPasswordVisible;
               }
+
+              return AppTextFormField(
+                controller: context.read<LoginCubit>().passwordController,
+                hintText: 'Password',
+                isObscureText: !isPasswordVisible, // Use state from Cubit
+                suffixIcon: GestureDetector(
+                  onTap: () {
+                    context
+                        .read<LoginCubit>()
+                        .togglePasswordVisibility(); // Call Cubit method
+                  },
+                  child: Icon(
+                    isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty || value.length < 6) {
+                    return 'Please enter a valid password (at least 6 characters)';
+                  }
+                  return null;
+                },
+              );
             },
-          ),
-          PasswordValidations(
-            hasLowerCase: hasLowercase,
-            hasUpperCase: hasUppercase,
-            hasSpecialCharacters: hasSpecialCharacters,
-            hasNumber: hasNumber,
-            hasMinLength: hasMinLength,
           ),
         ],
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    passwordController.dispose();
-    super.dispose();
   }
 }
